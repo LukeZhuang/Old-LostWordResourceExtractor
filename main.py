@@ -14,17 +14,8 @@ OUTPUT_DIR = "./output"
 
 # control vars
 do_extract_hit_check_order = False
-
 do_extract_unit = True
-unit_all_costumes = False
-do_extract_unit_square = False
-do_extract_unit_costume = False
-do_extract_unit_fullbody = False
-
 do_extract_picture = False
-do_extract_picture_thumbsquare = False
-do_extract_picture_thumblarge = False
-do_extract_picture_efuda = False
 
 if not os.path.exists(SOURCE_DIR):
 	os.makedirs(SOURCE_DIR)
@@ -47,6 +38,9 @@ data = json.load(manifest_file)
 asset_infos = data['AssetInfos']
 
 
-extract_hit_check_order(DOWNLOAD_PREFIX, asset_infos, do_extract_hit_check_order)
-extract_unit_img(DOWNLOAD_PREFIX, asset_infos, do_extract_unit, unit_all_costumes, do_extract_unit_square, do_extract_unit_costume, do_extract_unit_fullbody)
-extract_picture_img(DOWNLOAD_PREFIX, asset_infos, do_extract_picture, do_extract_picture_thumbsquare, do_extract_picture_thumblarge, do_extract_picture_efuda)
+if do_extract_hit_check_order:
+	extract_hit_check_order(DOWNLOAD_PREFIX, asset_infos)
+if do_extract_unit:
+	extract_unit_img(DOWNLOAD_PREFIX, asset_infos)
+if do_extract_picture:
+	extract_picture_img(DOWNLOAD_PREFIX, asset_infos)

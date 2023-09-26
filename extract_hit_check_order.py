@@ -3,6 +3,7 @@ import os
 import re
 import wget
 import UnityPy
+from util import create_output_folder_if_not_exist
 
 SOURCE_DIR = "./source"
 OUTPUT_DIR = "./output"
@@ -14,13 +15,8 @@ barrage_file_pattern = r'Barrage([12347][0123])'
 barrage_ids = ['1', '2', '3', '4' ,'7']
 boost_ids = ['0', '1', '2', '3']
 
-def extract_hit_check_order(DOWNLOAD_PREFIX, asset_infos, do_extract_hit_check_order):
-	if not do_extract_hit_check_order:
-		return
-
-	timeline_source_dir = os.path.join(SOURCE_DIR, "timeline")
-	if not os.path.exists(timeline_source_dir):
-		os.makedirs(timeline_source_dir)
+def extract_hit_check_order(DOWNLOAD_PREFIX, asset_infos):
+	create_output_folder_if_not_exist(SOURCE_DIR, "timeline")
 
 	# read all timeline info
 	unit_timeline = {}
@@ -42,6 +38,7 @@ def extract_hit_check_order(DOWNLOAD_PREFIX, asset_infos, do_extract_hit_check_o
 	hit_check_order_result = []
 
 	for unit, file_name in sorted_units:
+		print('processing hit_check_order for unit', unit)
 		timeline_file = os.path.join(timeline_source_dir, "timeline" + str(unit))
 
 		# download file if needed

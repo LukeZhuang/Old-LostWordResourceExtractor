@@ -1,3 +1,4 @@
 __pycache__
 output/*
+!output/HitCheckOrderTable.csv
 source/*

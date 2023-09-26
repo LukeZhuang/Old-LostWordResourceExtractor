@@ -76,8 +76,7 @@ def extract_picture_img(DOWNLOAD_PREFIX, asset_infos):
 					elif data.name.lower() == "Efuda".lower():
 						dest = os.path.join(picture_output_dir, "Efuda", picture_efuda_name(picture_id))
 
-					if dest:
-						assert not os.path.exists(dest)
+					if dest and not os.path.exists(dest):
 						data.image.save(dest)
 
 

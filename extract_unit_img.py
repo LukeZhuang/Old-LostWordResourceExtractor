@@ -9,6 +9,7 @@ OUTPUT_DIR = "./output"
 
 unit_square_pattern = r'^assets/east/units/([0-9]+)/([0-9]+)/thumbnail/square.png$'
 unit_costume_pattern = r'^assets/east/units/([0-9]+)/([0-9]+)/thumbnail/costume.png$'
+unit_change_pattern = r'^assets/east/units/([0-9]+)/([0-9]+)/thumbnail/change.png$'
 unit_fullbody_pattern = r'^assets/east/units/([0-9]+)/([0-9]+)/g([0-9]+)/g([0-9]+).png$'
 
 item_pattern = r'^([0-9]+)([a-zA-Z]+)$'
@@ -39,6 +40,9 @@ def unit_square_name(unit_id, costume_id):
 def unit_costume_name(unit_id, costume_id):
 	return "C" + str(unit_id) + str(costume_id) + ".png"
 
+def unit_change_name(unit_id, costume_id):
+	return "CH" + str(unit_id) + str(costume_id) + ".png"
+
 def unit_fullbody_name(unit_id, costume_id):
 	return "G" + str(unit_id) + str(costume_id) + ".png"
 
@@ -50,10 +54,12 @@ def extract_unit_img(DOWNLOAD_PREFIX, asset_infos):
 
 	create_output_folder_if_not_exist(unit_output_dir, "Square")
 	create_output_folder_if_not_exist(unit_output_dir, "Costume")
+	create_output_folder_if_not_exist(unit_output_dir, "Change")
 	create_output_folder_if_not_exist(unit_output_dir, "FullBody")
 
 	create_output_folder_if_not_exist(os.path.join(unit_output_dir, "Square"), "AltCostumes")
 	create_output_folder_if_not_exist(os.path.join(unit_output_dir, "Costume"), "AltCostumes")
+	create_output_folder_if_not_exist(os.path.join(unit_output_dir, "Change"), "AltCostumes")
 	create_output_folder_if_not_exist(os.path.join(unit_output_dir, "FullBody"), "AltCostumes")
 
 	# read all unit info
@@ -68,6 +74,7 @@ def extract_unit_img(DOWNLOAD_PREFIX, asset_infos):
 		for asset_path in asset_paths:
 			cur_unit = match_asset_pattern(unit_square_pattern, asset_path, cur_unit, items, "Square")
 			cur_unit = match_asset_pattern(unit_costume_pattern, asset_path, cur_unit, items, "Costume")
+			cur_unit = match_asset_pattern(unit_change_pattern, asset_path, cur_unit, items, "Change")
 			cur_unit = match_asset_pattern(unit_fullbody_pattern, asset_path, cur_unit, items, "FullBody")
 		
 		if cur_unit:
@@ -90,12 +97,6 @@ def extract_unit_img(DOWNLOAD_PREFIX, asset_infos):
 
 			# start extracing
 			bundle = UnityPy.load(unit_asset_file)
-			# objects = bundle.assets[0].objects
-			# for obj in objects.values():
-			# 	if obj.type.name in ["Texture2D"]:
-			# 		data = obj.read()
-			# 		dest = None
-			# 		print(data.name, data.path)
 			for path, obj in bundle.container.items():
 				if obj.type.name in ["Texture2D", "Sprite"]:
 					data = obj.read()
@@ -114,6 +115,12 @@ def extract_unit_img(DOWNLOAD_PREFIX, asset_infos):
 							dest = os.path.join(unit_output_dir, "Costume", unit_costume_name(unit_id, costume_id))
 						else:
 							dest = os.path.join(unit_output_dir, "Costume", "AltCostumes", unit_costume_name(unit_id, costume_id))
+					elif match_asset_pattern(unit_change_pattern, path, cur_unit, items, "Change"):
+						costume_id = extract_costume_id_from_items(items)
+						if costume_id == "01":
+							dest = os.path.join(unit_output_dir, "Change", unit_change_name(unit_id, costume_id))
+						else:
+							dest = os.path.join(unit_output_dir, "Change", "AltCostumes", unit_change_name(unit_id, costume_id))
 					elif match_asset_pattern(unit_fullbody_pattern, path, cur_unit, items, "FullBody"):
 						costume_id = extract_costume_id_from_items(items)
 						if costume_id == "01":
@@ -121,8 +128,7 @@ def extract_unit_img(DOWNLOAD_PREFIX, asset_infos):
 						else:
 							dest = os.path.join(unit_output_dir, "FullBody", "AltCostumes", unit_fullbody_name(unit_id, costume_id))
 
-					if dest:
-						assert not os.path.exists(dest)
+					if dest and not os.path.exists(dest):
 						data.image.save(dest)
 
 
